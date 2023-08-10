@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Effet Parallaxe</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .toolbar {
+            background-color: #f0f0f0;
+            padding: 10px;
+            position: relative;
+            z-index: 4;
+        }
+
+        .parallax-container {
+            position: relative;
+            max-width: 100%;
+            max-height: 100%;
+            overflow: hidden;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .parallax-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .layer1 {
+            z-index: 1;
+        }
+
+        .layer2 {
+            z-index: 2;
+            transform: scale(1.1);
+        }
+
+        .layer3 {
+            z-index: 3;
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="toolbar">
+        <input type="file" id="file1" accept="image/*" onchange="updateImage(1)">
+        <input type="file" id="file2" accept="image/*" onchange="updateImage(2)">
+        <input type="file" id="file3" accept="image/*" onchange="updateImage(3)">
+    </div>
+    <div class="parallax-container" id="parallax-container">
+        <div class="parallax-layer layer1"></div>
+        <div class="parallax-layer layer2"></div>
+        <div class="parallax-layer layer3"></div>
+    </div>
+    <script>
+        function updateImage(layer) {
+            var fileInput = document.getElementById('file' + layer);
+            var file = fileInput.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                var imageUrl = e.target.result;
+                var img = new Image();
+                img.src = imageUrl;
+                img.onload = function() {
+                    if (layer === 1) {
+                        document.getElementById('parallax-container').style.width = img.width + 'px';
+                        document.getElementById('parallax-container').style.height = img.height + 'px';
+                    }
+                    document.querySelector('.layer' + layer).style.backgroundImage = 'url(' + imageUrl + ')';
+                };
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        document.getElementById('parallax-container').addEventListener('mousemove', function(e) {
+            var offsetX = (e.clientX / this.offsetWidth - 0.5) * 20;
+            var offsetY = (e.clientY / this.offsetHeight - 0.5) * 20;
+            document.querySelector('.layer2').style.transform = 'translate(' + offsetX + 'px, ' + offsetY + 'px) scale(1.1)';
+            document.querySelector('.layer3').style.transform = 'translate(' + offsetX * 1.5 + 'px, ' + offsetY * 1.5 + 'px) scale(1.2)';
+        });
+    </script>
+</body>
+</html>
